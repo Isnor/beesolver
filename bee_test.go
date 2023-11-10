@@ -3,7 +3,7 @@ package beesolver_test
 import (
 	"testing"
 
-	"github.com/Isnor/beesolver/beesolver"
+	"github.com/Isnor/beesolver"
 )
 
 func TestBee(t *testing.T) {

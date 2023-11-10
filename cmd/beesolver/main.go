@@ -3,23 +3,25 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 
-	"github.com/Isnor/beesolver/beesolver"
+	"github.com/Isnor/beesolver"
 	"github.com/urfave/cli"
 )
 
 func main() {
-	var wordListPath, requiredLetter string
+	var wordListPath, letters, requiredLetter string
 
 	solver := &beesolver.BeeSolver{}
 	// parse args
 	cli := &cli.App{
 		Name: "beesolver",
 		Flags: []cli.Flag{
-			&cli.StringSliceFlag{
-				Name:     "l",
-				Usage:    "The 6 letters of the puzzle",
-				Required: true,
+			&cli.StringFlag{
+				Name:        "letters",
+				Usage:       "The 6 letters of the puzzle, comma separated",
+				Destination: &letters,
+				Required:    true,
 			},
 			&cli.StringFlag{
 				Name:        "middle",
@@ -35,8 +37,9 @@ func main() {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
+			allowedLetters := strings.Split(letters, ",")
 			var err error
-			solver, err = beesolver.NewBeeSolver(ctx.StringSlice("l"), wordListPath, requiredLetter, 4, 16)
+			solver, err = beesolver.NewBeeSolver(allowedLetters, wordListPath, requiredLetter, 4, 16)
 			return err
 		},
 	}
@@ -47,6 +50,9 @@ func main() {
 	}
 
 	// run solver
-	solutions, err := solver.Solve()
-	log.Printf("%s\n%v", solutions, err)
+	solutions, _ := solver.Solve()
+	if len(solutions) == 0 {
+		log.Fatal("no solutions found")
+	}
+	log.Printf("found solutions: %s\n", solutions)
 }
